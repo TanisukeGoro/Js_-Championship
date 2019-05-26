@@ -12,6 +12,7 @@
         "persistent": true,
         "scripts": ["background.js"]
     },
+    "icons": { "120": "static/icon.png" },
     "permissions": ["tabs"],
     "content_scripts": [{
         "matches": [
@@ -22,8 +23,9 @@
             "content_scripts.css"
         ],
         "js": [
-            "content_scripts.js",
-            "Panel.js"
+            "app/content_scripts.js",
+            "app/Panel.js",
+            "static/flexsearch.min.js"
         ]
     }]
 }
