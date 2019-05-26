@@ -1,0 +1,29 @@
+{
+    "name": "BaclkgroundColor",
+    "manifest_version": 2,
+    "version": "1.0",
+    "browser_action": {
+        "default_title": "BaclkgroundColor"
+    },
+    "web_accessible_resources": [
+        "components/panel/*.*"
+    ],
+    "background": {
+        "persistent": true,
+        "scripts": ["background.js"]
+    },
+    "permissions": ["tabs"],
+    "content_scripts": [{
+        "matches": [
+            "http://*/*",
+            "https://*/*"
+        ],
+        "css": [
+            "content_scripts.css"
+        ],
+        "js": [
+            "content_scripts.js",
+            "Panel.js"
+        ]
+    }]
+}
