@@ -8,11 +8,17 @@
 // }
 
 // inputFile.addEventListener('change', fileChange, false);
-var DICT_INDEX = ''
+var DICT_INDEX_KEYS = ''
 window.onload = () => {
-    DICT_INDEX = Object.keys(index);
-    text = 'One use case might be an automatic form fill extension.';
+    // 辞書データの読み取り
+    // from dict_src.js as DICT_INDEX_KEYS
+    DICT_INDEX_KEYS = Object.keys(DICT_INDEX);
+    document.addEventListener('mouseup', function(e) {
+        selectedObj = window.getSelection();
+        text = selectedObj.toString();
+        if (text.length !== 0) idiomSearch(text);
 
+    })
 }
 
 /***
@@ -27,7 +33,7 @@ window.onload = () => {
  * 
  * 
  */
-const search = searchChar => {
+const idiomSearch = searchChar => {
     const starTimes = performance.now();
     // 文字列の先頭と末尾のスペースは削除する
     searchChar = searchChar.trim();
@@ -39,11 +45,11 @@ const search = searchChar => {
     matchTestChar = searchChar.split(' ');
     // 一致したresultsKeysから正確に一致している単語を抽出
     matchingIdiom = diffResultArr(matchTestChar, resultsKeys);
-    console.log(matchingIdiom);
-    // console.log(resultsKeys);
     const endTimes = performance.now()
     const processTime = endTimes - starTimes;
-    console.log(`processTime => ${processTime.toFixed(3)} ms`);
+
+    // 結果があれば検索イベントを開始
+    (matchingIdiom.length !== 0) && outputResults(matchingIdiom, processTime);
 }
 
 /**
@@ -53,7 +59,7 @@ const search = searchChar => {
  */
 const listupMatchChar = text => {
     let returnArr = [];
-    DICT_INDEX.forEach(a => {
+    DICT_INDEX_KEYS.forEach(a => {
         // 小文字同士で比較する, 1文字の一致は除外
         if (-1 != text.indexOf(a.toLowerCase()) && a.length > 1) {
             returnArr.push(a);
@@ -111,12 +117,20 @@ const blackList = [
     'me',
 ]
 
+const outputResults = (matchingIdiom, processTime) => {
+    for (let i = 0; i < matchingIdiom.length; i++) {
+        console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
+    };
+    console.log(`processTime => ${processTime.toFixed(3)} ms`);
+
+}
+
 // ハッシュを用いて高速に処理を行えるのか考えたけど、今の所大丈夫そう
 // var arrTable = '';
 // const createHashTbale = () =>  {
 //     const starTimes = performance.now()
 
-//     arrTable = DICT_INDEX.reduce(function(m, a, i) {
+//     arrTable = DICT_INDEX_KEYS.reduce(function(m, a, i) {
 //         m[a] = (m[a] || []).concat(i);
 //         return m;
 //     }, {});
