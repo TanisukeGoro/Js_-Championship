@@ -16,8 +16,8 @@ const BLACK_LIST = [
     'this', 'that', 'these', 'those',
     'they', 'their', 'them',
     'is', 'was', 'are', 'were',
-]
-
+];
+// var cardsData = []
 
 var DICT_INDEX_KEYS = '';
 
@@ -32,7 +32,11 @@ window.onload = () => {
         if (text.length !== 0) idiomSearch(text);
 
     });
+    console.log(cardsData);
+
+
 }
+
 
 /**
  * 辞書検索関数
@@ -126,17 +130,17 @@ const checkDuplicate = (inpArr) => {
  * @param {card} matchingIdiom 
  */
 const outputResults = (matchingIdiom) => {
+    // console.log(matchingIdiom);
     for (let i = 0; i < matchingIdiom.length; i++) {
         cardsData.push({
             title: matchingIdiom[i],
             description: highlightSearchResult(DICT_INDEX[matchingIdiom[i]])
         });
-
-        highlight(document.querySelector('html'), matchingIdiom[i]);
-
         console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
+
     };
 }
+
 
 // テキストハイライトを行う関数
 const highlightSearchResult = (highlightElem) => {
@@ -200,4 +204,4 @@ const diffArrayTEST = (arr1, arr2) => {
 //     }
 //     const endTimes = performance.now()
 //     console.log(endTimes - starTimes);
-// }
+//

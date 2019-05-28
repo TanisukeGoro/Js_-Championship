@@ -4,8 +4,8 @@
  * divの中に入れたら動かなくなった、絶望
  */
 
-
 var cardsData = []
+
 
 Vue.directive('scroll', {
     inserted: function(el, binding) {
