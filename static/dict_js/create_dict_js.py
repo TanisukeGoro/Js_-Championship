@@ -55,7 +55,7 @@ pathlist = list(p.glob("*.txt"))
 pathlist.sort()
 # print(pathlist)
 for _path in pathlist:
-    print(_path)
+
     filename = os.path.basename(_path)
     name, ext = os.path.splitext(filename)
     indexname = 'index_' +  name[len(name)-1]
@@ -64,5 +64,38 @@ for _path in pathlist:
     text = open(_path).readlines()
     t = text[0]
     t = t[:(len(t)-2)]
-    with open(path_w, mode='w') as f:
+    with open(path_w, mode='a') as f:
         f.write('const '+indexname +' = '+ t + '};')
+
+# for _path in pathlist:
+
+
+
+# line = text.strip()
+# print(line)
+
+
+#
+#
+# pathlist = list(p.glob("*.txt"))
+#
+# print(len(pathlist))
+# count = 0
+#
+# for _path in pathlist:
+#     open(_path).readlines()
+#
+#     # print(os.path.basename(_path), lines)
+# print(count)
+#
+# text = "magnetize	…‘に'磁気を帯びさせる / 〈人〉‘を'引き付ける,魅する"
+# a = text.split(',')
+# print(a)
+
+
+# all_lines = 0
+# for _path in pathlist:
+#     hoge = pd.read_csv(_path)
+#     hoge.sort_values(by=['スポット','所在地'])
+#     no_duplicated_hoge = hoge.drop_duplicates(subset=['スポット','所在地','オプションエリア'],keep='first')
+#     no_duplicated_hoge.to_csv(_path, index=False)
