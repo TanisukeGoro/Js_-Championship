@@ -1,14 +1,27 @@
-// var inputFile = document.getElementById('file');
+/**
+ * dict.js
+ * 
+ * 
+ * 
+ */
 
-// function fileChange(ev) {
-//     var target = ev.target;
-//     var files = target.files;
+// keyが1文字のものは弾く
+// BLACK_LIST に存在する文字列も弾く
+const BLACK_LIST = [
+    'the', 'an', 'a',
+    'my', 'me', 'mine',
+    'he', 'his', 'him',
+    'she', 'her',
+    'we', 'our', 'us',
+    'this', 'that', 'these', 'those',
+    'they', 'their', 'them',
+    'is', 'was', 'are', 'were',
+]
 
-//     console.log(files);
-// }
 
-// inputFile.addEventListener('change', fileChange, false);
-var DICT_INDEX_KEYS = ''
+var DICT_INDEX_KEYS = '';
+
+
 window.onload = () => {
     // 辞書データの読み取り
     // from dict_src.js as DICT_INDEX_KEYS
@@ -18,20 +31,12 @@ window.onload = () => {
         text = selectedObj.toString();
         if (text.length !== 0) idiomSearch(text);
 
-    })
+    });
 }
 
-/***
- * 与えられた文字列を元に検索をかける
- * 
- * アルゴリズム
- * 1. まずはスペース区切りで検索をかける
- * 2. 一致した単語の中で比較対象と同じ文字列長ならOK
- * 
- * 
- * 1. ブラックリストと一致していたら出力を弾く
- * 
- * 
+/**
+ * 辞書検索関数
+ * @param {string} searchChar 
  */
 const idiomSearch = searchChar => {
     const starTimes = performance.now();
@@ -43,13 +48,24 @@ const idiomSearch = searchChar => {
     resultsKeys = listupMatchChar(searchChar);
 
     matchTestChar = searchChar.split(' ');
+
+    // 重複を削除
+    matchTestChar = checkDuplicate(matchTestChar);
+    // ブラックリスト掲載単語も削除
+    matchTestChar = matchTestChar.filter(
+        n => (BLACK_LIST.indexOf(n) === -1) && true);
+
     // 一致したresultsKeysから正確に一致している単語を抽出
     matchingIdiom = diffResultArr(matchTestChar, resultsKeys);
+
+
     const endTimes = performance.now()
     const processTime = endTimes - starTimes;
 
     // 結果があれば検索イベントを開始
-    (matchingIdiom.length !== 0) && outputResults(matchingIdiom, processTime);
+    (matchingIdiom.length !== 0) && outputResults(matchingIdiom);
+    console.log(`processTime => ${processTime.toFixed(3)} ms`);
+
 }
 
 /**
@@ -68,16 +84,13 @@ const listupMatchChar = text => {
     return returnArr
 }
 
+
 /**
  * 配列の差分から厳密な一致をテストする
  * @param {Array} matchTestChar 入力文字列を空白区切りした配列
  * @param {Array} resultsKeys 検索結果曖昧一致した配列
  */
 const diffResultArr = (matchTestChar, resultsKeys) => {
-    // 重複を削除
-    matchTestChar = matchTestChar.filter(function(x, i, self) {
-        return self.indexOf(x) === i;
-    });
     let matchingIdiom = [];
     matchTestChar.forEach(matchText => {
         resultsKeys.forEach(resultKey => {
@@ -97,33 +110,75 @@ const diffResultArr = (matchTestChar, resultsKeys) => {
     return matchingIdiom
 };
 
+/**
+ * 配列内の重複を削除する関数
+ * @param {Array} inpArr 配列の重複をチェックする関数
+ */
+const checkDuplicate = (inpArr) => {
+    inpArr = inpArr.filter(function(x, i, self) {
+        return self.indexOf(x) === i;
+    });
+    return inpArr
+};
+
+/**
+ * 拡張機能のカードに出力するための関数
+ * @param {card} matchingIdiom 
+ */
+const outputResults = (matchingIdiom) => {
+    for (let i = 0; i < matchingIdiom.length; i++) {
+        cardsData.push({
+            title: matchingIdiom[i],
+            description: highlightSearchResult(DICT_INDEX[matchingIdiom[i]])
+        });
+
+        highlight(document.querySelector('html'), matchingIdiom[i]);
+
+        console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
+    };
+}
+
+// テキストハイライトを行う関数
+const highlightSearchResult = (highlightElem) => {
+    const queryFront = '〈|《|『';
+    const queryEnd = '〉|》|』';
+    const regexpFront = new RegExp(`(${queryFront})`, 'gi');
+    const regexpEnd = new RegExp(`(${queryEnd})`, 'gi');
+    highlightElem = highlightElem.replace(regexpFront, '<span style="color: blue">$1')
+    highlightElem = highlightElem.replace(regexpEnd, '$1</span>')
+    return highlightElem
+}
 
 
 /**
- * 配列の差分をとる関数のテスト。これはダメっぽい
- * @param {*} arr1 入力文字列を空白区切りした配列
- * @param {*} arr2 検索結果曖昧一致した配列
+ * 
+ * @param {object} container 検索対象のDOM要素
+ * @param {string} what 検索する文字列
+ * @param {string} spanClass 適用するクラス
+ */
+function highlight(container, what) {
+    var content = container.innerHTML
+    const pattern = new RegExp(` ${what} `, 'gi')
+    let highlighted = content.replace(pattern, ` <mark>${what}</mark> `);
+    return (container.innerHTML = highlighted) !== content;
+}
+
+
+
+
+
+/**
+ * 配列同士の差分をとる関数
+ * 異なるものがあった場合、arr1の方を抽出する
+ * @param {*} arr1 差分を抽出する配列 
+ * @param {*} arr2 差分の比較対象
  */
 const diffArrayTEST = (arr1, arr2) => {
     return arr1.concat(arr2)
         .filter(item => !arr1.includes(item) || !arr2.includes(item));
 }
 
-// keyが1文字のものは弾く
-// blackList に存在する文字列も弾く
-const blackList = [
-    'I',
-    'me',
-    'me',
-]
 
-const outputResults = (matchingIdiom, processTime) => {
-    for (let i = 0; i < matchingIdiom.length; i++) {
-        console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
-    };
-    console.log(`processTime => ${processTime.toFixed(3)} ms`);
-
-}
 
 // ハッシュを用いて高速に処理を行えるのか考えたけど、今の所大丈夫そう
 // var arrTable = '';

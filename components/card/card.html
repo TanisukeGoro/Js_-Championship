@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="../panel/panel.css">
+<link rel="stylesheet" href="./card.css">
+
+<!-- <link rel="stylesheet" href="./style.css"> -->
+<div id="js-contentsWrapper" class="panel_container">
+    <div class="nav">
+        <div id="navEyeicon" class="nav-collapse-btn">
+            <div id="eyeIcon" class="c-eye--open" width="27" height="15"></div>
+        </div>
+        <!-- 81 × 20 のアイコンとタイトル -->
+        <div class="nav-logo">
+            <img src="../panel/81x20.png" id="navlogo" alt="" srcset="">
+        </div>
+        <div class="nav-dropdown"><img src="../panel/bars-solid.svg" width="27" height="15"></div>
+    </div>
+    <div class="contents">
+        <!-- CardをVue によるコンポーネント化 -->
+        <div class="blank_area"></div>
+        <div id="app" v-scroll="onScroll">
+            <div id="test" class="card" v-for="(card, index) in styledCards" :style="card.style" :key="index">
+                <!-- <img class="card__image" :src="card.img"> -->
+                <div class="card__content">
+
+                    <h3>{{card.title}}</h3>
+                    <p v-html="card.description"></p>
+                    <!-- <span v-html="card.description"></span> -->
+                    <button class="idiom-send send--icon"></button>
+                    <button class="idiom-delete delete--icon"></button>
+                </div>
+            </div>
+        </div>
+        <div class="blank_area"></div>
+
+        <div class="footer">
+            <img src="../panel/user-regular.svg" id="userIcon">
+            <p>USENAME USENAME</p>
+        </div>
+    </div>
+
+</div>
+
+<p id="p-tag">
+    If I get to go to a desert island for a week, the one thing I will bring is my friend. One week is pretty long to spend by myself and doing everything by myself will be so sad. I will be able to experience a lot of wonderful things on the island, but
+    If I don't have anyone to share them with, they won't be the same. Since we are always busy with school, we rarely spend a lot of time together. Therefore, spending one week on the island doing everything together will be a great chance for us to
+    catch up and enrich our friendship zero hour.
+</p>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+<script src="card.js"></script>
+<script src="/app/dict_src.js"></script>
+<script src="/app/dict.js"></script>
