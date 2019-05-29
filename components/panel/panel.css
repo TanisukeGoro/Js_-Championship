@@ -1,4 +1,5 @@
 .panel_container {
+    will-change: transform;
     display: block;
     position: absolute;
     top: 40px;
@@ -9,7 +10,7 @@
 }
 
 .nav {
-    background-color: #d9dce0;
+    background-color: #FFFFFF;
     display: flex;
     justify-content: space-between;
     height: 30px;
@@ -45,7 +46,7 @@
 
 .contents {
     height: 470px;
-    background-color: #d5dfee;
+    background-color: #F5F7FA;
     /* overflow-y: auto; */
     /* overflow-x: hidden */
 }

@@ -19,9 +19,10 @@ const BLACK_LIST = [
 ];
 // var cardsData = []
 
+
 var DICT_INDEX_KEYS = '';
 
-
+var cardsData = [];
 window.onload = () => {
     // 辞書データの読み取り
     // from dict_src.js as DICT_INDEX_KEYS
@@ -32,9 +33,6 @@ window.onload = () => {
         if (text.length !== 0) idiomSearch(text);
 
     });
-    console.log(cardsData);
-
-
 }
 
 
@@ -56,21 +54,25 @@ const idiomSearch = searchChar => {
     // 重複を削除
     matchTestChar = checkDuplicate(matchTestChar);
     // ブラックリスト掲載単語も削除
+    // matchTestChar = matchTestChar.filter(
+    //     n => (BLACK_LIST.indexOf(n) === -1) && true);
     matchTestChar = matchTestChar.filter(
-        n => (BLACK_LIST.indexOf(n) === -1) && true);
+        n => BLACK_LIST.indexOf(n) === -1);
+
 
     // 一致したresultsKeysから正確に一致している単語を抽出
     matchingIdiom = diffResultArr(matchTestChar, resultsKeys);
 
-
     const endTimes = performance.now()
     const processTime = endTimes - starTimes;
+    console.log(`processTime => ${processTime.toFixed(3)} ms`);
 
     // 結果があれば検索イベントを開始
     (matchingIdiom.length !== 0) && outputResults(matchingIdiom);
-    console.log(`processTime => ${processTime.toFixed(3)} ms`);
+
 
 }
+
 
 /**
  * 入力された文字列に対して曖昧に一致する文字列を返す
@@ -93,6 +95,8 @@ const listupMatchChar = text => {
  * 配列の差分から厳密な一致をテストする
  * @param {Array} matchTestChar 入力文字列を空白区切りした配列
  * @param {Array} resultsKeys 検索結果曖昧一致した配列
+ * @param {string} resultsKeys 検索結果曖昧一致した配列
+ *
  */
 const diffResultArr = (matchTestChar, resultsKeys) => {
     let matchingIdiom = [];
@@ -130,15 +134,22 @@ const checkDuplicate = (inpArr) => {
  * @param {card} matchingIdiom 
  */
 const outputResults = (matchingIdiom) => {
-    // console.log(matchingIdiom);
     for (let i = 0; i < matchingIdiom.length; i++) {
+        // highlight(document.body, matchingIdiom[i]);
         cardsData.push({
             title: matchingIdiom[i],
             description: highlightSearchResult(DICT_INDEX[matchingIdiom[i]])
         });
-        console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
+        // console.log(cardsData);
+
+        // console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
 
     };
+
+    chrome.storage.local.set({ idiomListData: cardsData }, function() {
+        console.log('data save success !!!');
+        highlight(document.querySelector('html'), matchingIdiom);
+    });
 }
 
 
@@ -157,14 +168,19 @@ const highlightSearchResult = (highlightElem) => {
 /**
  * 
  * @param {object} container 検索対象のDOM要素
- * @param {string} what 検索する文字列
+ * @param {Array} what 検索する文字列の配列
  * @param {string} spanClass 適用するクラス
  */
+
 function highlight(container, what) {
     var content = container.innerHTML
-    const pattern = new RegExp(` ${what} `, 'gi')
-    let highlighted = content.replace(pattern, ` <mark>${what}</mark> `);
-    return (container.innerHTML = highlighted) !== content;
+    let pattern = ''
+    for (let i = 0; i < what.length; i++) {
+        pattern = new RegExp(` ${what[i]} `, 'gi');
+        content = content.replace(pattern, ` <mark>${what[i]}</mark> `);
+    }
+    container.innerHTML = content;
+    // return (container.innerHTML = highlighted) !== content;
 }
 
 

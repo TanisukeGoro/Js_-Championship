@@ -10,30 +10,20 @@
         </div>
         <!-- 81 × 20 のアイコンとタイトル -->
         <div class="nav-logo">
-            <img src="../panel/81x20.png" id="navlogo" alt="" srcset="">
+            <img src="../panel/icon/81x20.png" id="navlogo" alt="" srcset="">
         </div>
-        <div class="nav-dropdown"><img src="../panel/bars-solid.svg" width="27" height="15"></div>
+        <div class="nav-dropdown"><img src="../panel/icon/bars-solid.svg" width="27" height="15"></div>
     </div>
     <div class="contents">
         <!-- CardをVue によるコンポーネント化 -->
         <div class="blank_area"></div>
-        <div id="app" v-scroll="onScroll">
-            <div id="test" class="card" v-for="(card, index) in styledCards" :style="card.style" :key="index">
-                <!-- <img class="card__image" :src="card.img"> -->
-                <div class="card__content">
+        <div id="idiom-card--app">
 
-                    <h3>{{card.title}}</h3>
-                    <p v-html="card.description"></p>
-                    <!-- <span v-html="card.description"></span> -->
-                    <button class="idiom-send send--icon"></button>
-                    <button class="idiom-delete delete--icon"></button>
-                </div>
-            </div>
         </div>
         <div class="blank_area"></div>
 
         <div class="footer">
-            <img src="../panel/user-regular.svg" id="userIcon">
+            <img src="../panel/icon/user-regular.svg" id="userIcon">
             <p>USENAME USENAME</p>
         </div>
     </div>
@@ -47,5 +37,4 @@
 </p>
 <script src="../../app/dict_src.js"></script>
 <script src="../../app/dict.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
-<script src="./card.js"></script>
+<script src="./Card.js"></script>
