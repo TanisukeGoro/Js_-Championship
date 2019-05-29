@@ -8,7 +8,8 @@
     "web_accessible_resources": [
         "components/panel/*.*",
         "components/card/*.*",
-        "app/*.*"
+        "app/*.*",
+        "static/icon.png"
     ],
     "background": {
         "persistent": true,

@@ -27,12 +27,26 @@ window.onload = () => {
     // 辞書データの読み取り
     // from dict_src.js as DICT_INDEX_KEYS
     DICT_INDEX_KEYS = Object.keys(DICT_INDEX);
+
+    // テキストが選択された場合、ボタンを表示させる
     document.addEventListener('mouseup', function(e) {
         selectedObj = window.getSelection();
         text = selectedObj.toString();
-        if (text.length !== 0) idiomSearch(text);
-
+        if (text.length !== 0) insertSearchBtn(e.pageX, e.pageY);
     });
+}
+
+
+const insertSearchBtn = (mouseX, mouseY) => {
+    // もしすでにボタンが表示されていた場合は処理を中断する
+    isSearchBtn = document.querySelector('#go-Search-Idiom-btn');
+    if (isSearchBtn === null) new SearchBtn(mouseX, mouseY);
+};
+
+const searchTrigger = () => {
+    selectedObj = window.getSelection();
+    text = selectedObj.toString();
+    if (text.length !== 0) idiomSearch(text);
 }
 
 
@@ -148,7 +162,7 @@ const outputResults = (matchingIdiom) => {
 
     chrome.storage.local.set({ idiomListData: cardsData }, function() {
         console.log('data save success !!!');
-        highlight(document.querySelector('html'), matchingIdiom);
+        highlight(document.querySelector('body'), matchingIdiom);
     });
 }
 
@@ -184,6 +198,55 @@ function highlight(container, what) {
 }
 
 
+/**
+ * マウスの近くに検索ボタンを表示する関数
+ */
+class SearchBtn {
+    constructor(mouseX, mouseY) {
+        // constructor() {
+        this.positionX = mouseX;
+        this.positionY = mouseY;
+        this.init();
+        this.createBtnDOM();
+    }
+    init = () => {
+        const btnicon = chrome.extension.getURL('static/icon.png');
+        this.btnHTML = `
+        <button id="idiom-search-button" style="border-radius: 8px;">
+            <img src="${btnicon}" width="20px" height="20px">
+        </button>`
+    }
+
+    btnBind = () => {
+        this.searchBtnWrapper
+    }
+
+    btnClick = () => {
+        console.log('reaifew');
+        this.searchBtnWrapper.addEventListener('click', function() {
+            searchTrigger();
+            document.body.removeChild(isSearchBtn);
+        })
+    }
+
+    createBtnDOM = () => {
+        this.btnDOM = document.createElement('div');
+        this.btnDOM.setAttribute('id', 'go-Search-Idiom-btn');
+        this.btnDOM.insertAdjacentHTML('afterbegin', this.btnHTML);
+        this.btnDOM.style.zIndex = 1000000;
+        this.btnDOM.style.position = 'absolute';
+        this.btnDOM.style.width = "20px";
+        this.btnDOM.style.height = "20px";
+        this.btnDOM.style.borderRadius = "5px";
+        this.btnDOM.style.left = `${this.positionX}px`;
+        this.btnDOM.style.top = `${this.positionY + -50 }px`;
+        document.body.appendChild(this.btnDOM);
+        this.searchBtnWrapper = document.getElementById('idiom-search-button');
+        console.log(this.searchBtnWrapper);
+        this.btnClick();
+    }
+}
+
 
 
 
@@ -197,27 +260,3 @@ const diffArrayTEST = (arr1, arr2) => {
     return arr1.concat(arr2)
         .filter(item => !arr1.includes(item) || !arr2.includes(item));
 }
-
-
-
-// ハッシュを用いて高速に処理を行えるのか考えたけど、今の所大丈夫そう
-// var arrTable = '';
-// const createHashTbale = () =>  {
-//     const starTimes = performance.now()
-
-//     arrTable = DICT_INDEX_KEYS.reduce(function(m, a, i) {
-//         m[a] = (m[a] || []).concat(i);
-//         return m;
-//     }, {});
-//     const endTimes = performance.now()
-//     console.log(endTimes - starTimes);
-// }
-
-// const searchHash = (searchChar) => {
-//     const starTimes = performance.now()
-//     if (searchNum in arrTable) {
-//         console.log(a);
-//     }
-//     const endTimes = performance.now()
-//     console.log(endTimes - starTimes);
-//

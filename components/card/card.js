@@ -10,35 +10,54 @@
 //         console.log('変更がありました！！');
 //     }
 // )
-
-
-let isPanel = false
-    // メッセージを元に、 panelの表示状態を習得
-    // chrome.runtime.onMessage.addListener(
-    //     function(request, sender, sendResponse) {
-    //         (isPanel) ? isPanel = false: isPanel = true;
-    //         console.log(isPanel);
-    //         return true
-    //     });
+let isPanel = false;
+let cardArr = [];
+// メッセージを元に、 panelの表示状態を習得
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        (isPanel) ? isPanel = false: isPanel = true;
+        console.log(isPanel);
+        return true
+    });
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
         let storageChange = changes[key];
         if (key == 'idiomListData') {
-            console.log(storageChange);
-            cardsNewData = storageChange.newValue
-            cardsOlData = storageChange.Ol
+            cardsNewData = checkingObjDuplicate(
+                storageChange.newValue,
+                storageChange.oldValue
+            );
             for (let i = 0; i < cardsNewData.length; i++) {
-                new Card(cardsNewData[i].title, cardsNewData[i].description);
-            }
-            console.log('testtest');
-            // console.log('cardsData', cardsData);
+                cardArr.push(new Card(cardsNewData[i].title, cardsNewData[i].description));
+            };
+            console.log(cardsNewData);
+            console.log(cardArr);
         }
     }
+
 });
+
+const checkingObjDuplicate = (newIdiom, oldIdiom) => {
+    newIdiom.concat(oldIdiom);
+    let arrObj = {};
+    for (var i = 0; i < newIdiom.length; i++) {
+        arrObj[newIdiom[i]['title']] = newIdiom[i];
+    }
+    let outputObj = [];
+    for (var key in arrObj) {
+        outputObj.push(arrObj[key]);
+    }
+    return outputObj
+}
+
+
+
 class Card {
     constructor(title, description) {
         this.title = title;
+        this.sendBtnID = `idom-send-btn-${this.title.replace(/\s+/g, "")}`
+        this.deleatBtnID = `idom-delete-btn-${this.title.replace(/\s+/g, "")}`
         this.description = description;
         this.init();
     }
@@ -50,8 +69,8 @@ class Card {
                 <h3>${this.title}</h3>
                 <p>${this.description}</p>
             </div>
-            <button class="idiom-send send--icon"></button>
-            <button class="idiom-delete delete--icon"></button>
+            <button id="${this.sendBtnID}" class="idiom-send send--icon"></button>
+            <button id="${this.deleatBtnID}" class="idiom-delete delete--icon"></button>
         `
         this.createCardDOM()
     };
@@ -59,11 +78,27 @@ class Card {
     createCardDOM = () => {
         this.cardDOM = document.createElement('div');
         this.cardDOM.setAttribute('class', 'card');
-        this.cardDOM.setAttribute('id', this.title.replace(/\s+/g, ""));
+        this.cardDOM.setAttribute('id', `idiom-${this.title.replace(/\s+/g, "")}`);
         this.cardDOM.innerHTML = this.cardHTML;
-        console.log(this.cardDOM);
         this.idiomPanelWrapper = document.querySelector('#idiom-card--app');
         this.idiomPanelWrapper.appendChild(this.cardDOM);
+        this.cardBind();
+        this.cardAttch();
+    };
+    cardBind = () => {
+        this.sendCardBtn = document.getElementById(this.sendBtnID);
+        this.deleteCardBtn = document.getElementById(this.deleatBtnID);
+    }
+    cardAttch = () => {
+        this.sendCardBtn.addEventListener('click', this.cardSend);
+        this.deleteCardBtn.addEventListener('click', this.cardDelete);
+    }
+
+    cardSend = (e) => {
+        console.log(e.path);
+    }
+    cardDelete = (e) => {
+        console.log(e.path);
     }
 
 }
