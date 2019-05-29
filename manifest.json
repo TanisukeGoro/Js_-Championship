@@ -6,25 +6,33 @@
         "default_title": "BaclkgroundColor"
     },
     "web_accessible_resources": [
-        "components/panel/*.*"
+        "components/panel/*.*",
+        "components/card/*.*",
+        "app/*.*",
+        "static/icon.png"
     ],
     "background": {
         "persistent": true,
         "scripts": ["background.js"]
     },
     "icons": { "120": "static/icon.png" },
-    "permissions": ["tabs"],
+    "permissions": [
+        "tabs",
+        "storage"
+    ],
     "content_scripts": [{
         "matches": [
             "http://*/*",
-            "https://*/*"
+            "https://*/*",
+            "file://*/*"
         ],
         "css": [
             "app/content_scripts.css"
         ],
         "js": [
+            "components/panel/Panel.js",
+            "components/card/Card.js",
             "app/content_scripts.js",
-            "app/Panel.js",
             "app/dict_src.js",
             "app/dict.js"
         ]

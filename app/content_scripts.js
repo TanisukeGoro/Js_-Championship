@@ -1,5 +1,3 @@
-console.log('これはテスト');
-
 // chrome.runtime.onMessage.addListener(function(msg) {
 //     console.log(msg);
 // });
@@ -21,5 +19,3 @@ chrome.runtime.onMessage.addListener(
         }
         return true;
     });
-
-console.log('appendしたよ');

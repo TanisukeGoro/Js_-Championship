@@ -7,20 +7,43 @@
 // this.panelframe_bars = chrome.extension.getURL('components/panel/bars-solid.svg');
 // this.eyeOpen = chrome.extension.getURL('components/panel/eye-regular.svg');
 // this.eyeClose = chrome.extension.getURL('components/panel/eye-slash-regular.svg');
-
 // 要素をjQuery風に扱う
 let panelDispFlg = true;
 
+
 const create = () => {
-    a = new Panel();
-    a.createPanelDOM();
+    panelOBJ = new Panel();
+    panelOBJ.createPanelDOM();
     panelDispFlg = false;
 };
 
 const deleted = () => {
     console.log('deleted !!');
-    a.deletePanl();
+    panelOBJ.deletePanel();
     panelDispFlg = true;
+};
+
+let x = 0;
+let y = 0;
+
+let scrollTop = 0;
+let scrollLeft = 0;
+scrollTop =
+    document.documentElement.scrollTop || // IE、Firefox、Opera
+    document.body.scrollTop; // Chrome、Safari
+scrollLeft =
+    document.documentElement.scrollLeft || // IE、Firefox、Opera
+    document.body.scrollLeft; // Chrome、Safari
+
+
+window.onscroll = function() {
+    scrollTop =
+        document.documentElement.scrollTop || // IE、Firefox、Opera
+        document.body.scrollTop; // Chrome、Safari
+    scrollLeft =
+        document.documentElement.scrollLeft || // IE、Firefox、Opera
+        document.body.scrollLeft; // Chrome、Safari
+
 };
 
 chrome.runtime.onMessage.addListener(
@@ -38,8 +61,8 @@ chrome.runtime.onMessage.addListener(
         // if (request.greeting == "component") {
         //     sendResponse({ farewell: "this is Panel" });
         //     console.log(request.greeting);
-        //     a = new Panel();
-        //     a.createPanelDOM();
+        //     panelOBJ = new Panel();
+        //     panelOBJ.createPanelDOM();
         // }
         return true
     });
@@ -49,81 +72,57 @@ class Panel {
     constructor() {
         // Panel DOM wrapper
         this.wrapperElement = '';
+        // this.navPositon.x = 
 
         // Panelの最小化表示の状態管理
         this.activeEyeFlg = true;
 
         this.init();
         // this.initDebug();
-    }
+    };
 
-    initDebug = () => {
-        const panelframe_css = 'components/panel/panel.css';
-        const panelframe_js = 'components/panel/panel.js';
-        const panelframe_Logo = 'components/panel/81x20.png';
-        const panelframe_user = 'components/panel/user-regular.svg';
-        this.panelframe_bars = 'components/panel/bars-solid.svg';
-        this.eyeOpen = 'components/panel/eye-regular.svg';
-        this.eyeClose = 'components/panel/eye-slash-regular.svg';
-        // テンプレートとなるHTMLファイルのプリロード
-        this.HTMLtext = `  
-            <link rel="stylesheet" href="${panelframe_css}">
-            <div id="js-contentsWrapper" class="panel_container">
-                <div class="nav">
-                    <div id="navEyeicon" class="nav-collapse-btn"><div id="eyeIcon" class="c-eye--open" width="27" height="15"></div></div>
-                    <!-- 81 × 20 のアイコンとタイトル -->
-                    <div class="nav-logo">
-                        <img src="${panelframe_Logo}" id="navlogo"  alt="" srcset="">
-                    </div>
-                    <div class="nav-dropdown"><img src="${this.panelframe_bars}" width="27" height="15"></div>
-                </div>
-                <div class="contents">
-
-                    <div class="footer">
-                        <img src="${panelframe_user}" id="userIcon">
-                        <p>USENAME USENAME</p>
-                    </div>
-                </div>
-            </div>
-
-            <script src="${panelframe_js}"></script>`;
-
-    }
     init = () => {
         const panelframe_css = chrome.extension.getURL('components/panel/panel.css');
-        const panelframe_js = chrome.extension.getURL('components/panel/panel.js');
-        const content_script_js = chrome.extension.getURL('content_scripts.js');
+        const card_css = chrome.extension.getURL('components/card/card.css');
+        const panelframe_Logo = chrome.extension.getURL('components/panel/icon/81x20.png');
+        const panelframe_user = chrome.extension.getURL('components/panel/icon/user-regular.svg');
 
-        const panelframe_Logo = chrome.extension.getURL('components/panel/81x20.png');
-        const panelframe_user = chrome.extension.getURL('components/panel/user-regular.svg');
 
-        this.panelframe_bars = chrome.extension.getURL('components/panel/bars-solid.svg');
-        this.eyeOpen = chrome.extension.getURL('components/panel/eye-regular.svg');
-        this.eyeClose = chrome.extension.getURL('components/panel/eye-slash-regular.svg');
+        this.panelframe_bars = chrome.extension.getURL('components/panel/icon/bars-solid.svg');
+        this.panelframe_bars = chrome.extension.getURL('components/panel/icon/bars-solid.svg');
 
         // テンプレートとなるHTMLファイルのプリロード
         this.HTMLtext = `  
-            <link rel="stylesheet" href="${panelframe_css}">
-            <div id="js-contentsWrapper" class="panel_container">
-                <div class="nav">
-                    <div id="navEyeicon" class="nav-collapse-btn"><div id="eyeIcon" class="c-eye--open" width="27" height="15"></div></div>
-                    <!-- 81 × 20 のアイコンとタイトル -->
-                    <div class="nav-logo">
-                        <img src="${panelframe_Logo}" alt="" srcset="">
-                    </div>
-                    <div class="nav-dropdown"><img src="${this.panelframe_bars}" width="27" height="15"></div>
+        <link rel="stylesheet" href="${panelframe_css}">
+        <link rel="stylesheet" href="${card_css}">
+        <div id="js-contentsWrapper" class="panel_container">
+            <div class="nav">
+                <div id="navEyeicon" class="nav-collapse-btn">
+                    <div id="eyeIcon" class="c-eye--open" width="27" height="15"></div>
                 </div>
-                <div class="contents">
-
-                    <div class="footer">
-                        <img src="${panelframe_user}" width="27" height="20">
-                        <p>USENAME USENAME</p>
-                    </div>
+                <!-- 81 × 20 のアイコンとタイトル -->
+                <div class="nav-logo">
+                <img src="${panelframe_Logo}" alt="" srcset="">
                 </div>
+                <div class="nav-dropdown"><img src="${this.panelframe_bars}" width="27" height="15"></div>
             </div>
 
-            <script src="${panelframe_js}"></script>
-            <script src="${content_script_js}"></script>`;
+            <div class="contents">
+            <!-- CardをVue によるコンポーネント化 -->
+                <div class="blank_area"></div>
+                <div id="idiom-card--app">
+
+                </div>
+            <div class="blank_area"></div>
+            <div class="blank_area"></div>
+            <div class="blank_area"></div>
+
+            <div class="footer">
+            <img src="${panelframe_user}" width="27" height="20">
+            <p>USENAME USENAME</p>
+            </div>
+            </div>
+        </div>`;
     };
 
     /**
@@ -145,24 +144,57 @@ class Panel {
         // if clicked eye icon, then checking the eyeicon state.
         this.iconSvgElem.addEventListener('click', this.changeEyestate);
         // if the navigation bar is held then activate the move event.  
-        // this.navElem.addEventListener('mousedown', function(e) {
-        //     this.panelMoveEvent(e);
-        // });
         this.navElem.addEventListener('mousedown', this.panelMoveEvent);
+        // if scrolling web page, 
+        window.addEventListener('scroll', this.keepPotision);
         console.log('panel DOM Attached');
     };
+
+    /**
+     * パネルの位置を保持しておく関数
+     */
+    keepPotision = () => {
+        x = this.wrapperPotision.x + scrollLeft;
+        y = this.wrapperPotision.y + scrollTop;
+        this.wrapperElement.style.left = `${x}px`;
+        this.wrapperElement.style.top = `${y}px`;
+    }
 
     /**
      * Panel DOM を生成
      * @method createPanelDOM
      */
     createPanelDOM = () => {
-        document.body.insertAdjacentHTML('beforeend', this.HTMLtext);
+        // let test = document.createElement('idiomFlame');
+        // test.innerHTML = this.HTMLtext;
+        // let htmlELEM = document.querySelector('html');
+        // htmlELEM.appendChild(test);
+        document.body.insertAdjacentHTML('afterend', this.HTMLtext);
         this.wrapperElement = document.getElementById("js-contentsWrapper");
+        scrollTop =
+            document.documentElement.scrollTop || // IE、Firefox、Opera
+            document.body.scrollTop; // Chrome、Safari
+        scrollLeft =
+            document.documentElement.scrollLeft || // IE、Firefox、Opera
+            document.body.scrollLeft; // Chrome、Safari
+        x = scrollLeft + 300;
+        y = scrollTop + 40;
+        this.wrapperElement.style.left = `${x}px`;
+        this.wrapperElement.style.top = `${y}px`;
+        this.wrapperPotision = this.wrapperElement.getBoundingClientRect();
+        this.wrapperPotision.x = 300;
+        this.wrapperPotision.y = 40;
         this.panelDOMbind();
         this.panelDOMattach();
-        // return this.wrapperElement
     };
+
+
+    deletePanel = () => {
+        // removeElem.parentNode.removeChild(removeElem);
+        this.wrapperElement.parentNode.removeChild(this.wrapperElement);
+        // document.documentElement.removeChild(this.wrapperElement);
+        this.wrapperElement = null;
+    }
 
 
     changeEyestate = () => (this.activeEyeFlg === true) ? this.closePanel() : this.openPanel();
@@ -190,9 +222,8 @@ class Panel {
             // this.contents.display = "none";
         }, 1000);
     };
-    /**
-     * 
-     */
+
+
     panelMoveEvent = (e) => {
         this.mousedownOnNav(e);
         window.onmousemove = e => this.moveOnNav(e);
@@ -203,10 +234,10 @@ class Panel {
     }
 
     mousedownOnNav = (event) => {
-        let navPositon = this.navElem.getBoundingClientRect();
+        this.navPositon = this.navElem.getBoundingClientRect();
         this.offset = {
-            x: navPositon.x - event.pageX,
-            y: navPositon.y - event.pageY
+            x: this.navPositon.x - event.pageX,
+            y: this.navPositon.y - event.pageY
         }
     };
 
@@ -215,26 +246,8 @@ class Panel {
         y = event.pageY + this.offset.y + scrollTop;
         this.wrapperElement.style.left = `${x}px`;
         this.wrapperElement.style.top = `${y}px`;
+        this.wrapperPotision = this.wrapperElement.getBoundingClientRect();
     };
 
-    deletePanl = () => {
-        document.body.removeChild(this.wrapperElement);
-        this.wrapperElement = null;
-    }
 
 }
-let x = 0;
-let y = 0;
-
-let scrollTop = 0;
-let scrollLeft = 0;
-window.onscroll = function() {
-    scrollTop =
-        document.documentElement.scrollTop || // IE、Firefox、Opera
-        document.body.scrollTop; // Chrome、Safari
-    scrollLeft =
-        document.documentElement.scrollLeft || // IE、Firefox、Opera
-        document.body.scrollLeft; // Chrome、Safari
-}
-
-// exports = Panel;

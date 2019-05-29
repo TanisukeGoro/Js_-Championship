@@ -1,15 +1,14 @@
 .panel_container {
+    will-change: transform;
     display: block;
     position: absolute;
-    top: 40px;
-    left: 300px;
-    width: 250px;
+    width: 270px;
     height: 500px;
     z-index: 2147483647 !important;
 }
 
 .nav {
-    background-color: #d9dce0;
+    background-color: #FFFFFF;
     display: flex;
     justify-content: space-between;
     height: 30px;
@@ -45,7 +44,7 @@
 
 .contents {
     height: 470px;
-    background-color: #d5dfee;
+    background-color: #F5F7FA;
     /* overflow-y: auto; */
     /* overflow-x: hidden */
 }
@@ -71,7 +70,7 @@
     bottom: 0;
     background-color: #d2dcdd;
     height: 30px;
-    width: 250px;
+    width: 270px;
 }
 
 .footer>p {

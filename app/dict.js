@@ -19,22 +19,34 @@ const BLACK_LIST = [
 ];
 // var cardsData = []
 
+
 var DICT_INDEX_KEYS = '';
 
-
+var cardsData = [];
 window.onload = () => {
     // 辞書データの読み取り
     // from dict_src.js as DICT_INDEX_KEYS
     DICT_INDEX_KEYS = Object.keys(DICT_INDEX);
+
+    // テキストが選択された場合、ボタンを表示させる
     document.addEventListener('mouseup', function(e) {
         selectedObj = window.getSelection();
         text = selectedObj.toString();
-        if (text.length !== 0) idiomSearch(text);
-
+        if (text.length !== 0) insertSearchBtn(e.pageX, e.pageY);
     });
-    console.log(cardsData);
+}
 
 
+const insertSearchBtn = (mouseX, mouseY) => {
+    // もしすでにボタンが表示されていた場合は処理を中断する
+    isSearchBtn = document.querySelector('#go-Search-Idiom-btn');
+    if (isSearchBtn === null) new SearchBtn(mouseX, mouseY);
+};
+
+const searchTrigger = () => {
+    selectedObj = window.getSelection();
+    text = selectedObj.toString();
+    if (text.length !== 0) idiomSearch(text);
 }
 
 
@@ -56,21 +68,25 @@ const idiomSearch = searchChar => {
     // 重複を削除
     matchTestChar = checkDuplicate(matchTestChar);
     // ブラックリスト掲載単語も削除
+    // matchTestChar = matchTestChar.filter(
+    //     n => (BLACK_LIST.indexOf(n) === -1) && true);
     matchTestChar = matchTestChar.filter(
-        n => (BLACK_LIST.indexOf(n) === -1) && true);
+        n => BLACK_LIST.indexOf(n) === -1);
+
 
     // 一致したresultsKeysから正確に一致している単語を抽出
     matchingIdiom = diffResultArr(matchTestChar, resultsKeys);
 
-
     const endTimes = performance.now()
     const processTime = endTimes - starTimes;
+    console.log(`processTime => ${processTime.toFixed(3)} ms`);
 
     // 結果があれば検索イベントを開始
     (matchingIdiom.length !== 0) && outputResults(matchingIdiom);
-    console.log(`processTime => ${processTime.toFixed(3)} ms`);
+
 
 }
+
 
 /**
  * 入力された文字列に対して曖昧に一致する文字列を返す
@@ -93,6 +109,8 @@ const listupMatchChar = text => {
  * 配列の差分から厳密な一致をテストする
  * @param {Array} matchTestChar 入力文字列を空白区切りした配列
  * @param {Array} resultsKeys 検索結果曖昧一致した配列
+ * @param {string} resultsKeys 検索結果曖昧一致した配列
+ *
  */
 const diffResultArr = (matchTestChar, resultsKeys) => {
     let matchingIdiom = [];
@@ -130,15 +148,22 @@ const checkDuplicate = (inpArr) => {
  * @param {card} matchingIdiom 
  */
 const outputResults = (matchingIdiom) => {
-    // console.log(matchingIdiom);
     for (let i = 0; i < matchingIdiom.length; i++) {
+        // highlight(document.body, matchingIdiom[i]);
         cardsData.push({
             title: matchingIdiom[i],
             description: highlightSearchResult(DICT_INDEX[matchingIdiom[i]])
         });
-        console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
+        // console.log(cardsData);
+
+        // console.log(`idiom : ${matchingIdiom[i]}\n`, DICT_INDEX[matchingIdiom[i]]);
 
     };
+
+    chrome.storage.local.set({ idiomListData: cardsData }, function() {
+        console.log('data save success !!!');
+        highlight(document.querySelector('body'), matchingIdiom);
+    });
 }
 
 
@@ -157,16 +182,70 @@ const highlightSearchResult = (highlightElem) => {
 /**
  * 
  * @param {object} container 検索対象のDOM要素
- * @param {string} what 検索する文字列
+ * @param {Array} what 検索する文字列の配列
  * @param {string} spanClass 適用するクラス
  */
+
 function highlight(container, what) {
     var content = container.innerHTML
-    const pattern = new RegExp(` ${what} `, 'gi')
-    let highlighted = content.replace(pattern, ` <mark>${what}</mark> `);
-    return (container.innerHTML = highlighted) !== content;
+    let pattern = ''
+    for (let i = 0; i < what.length; i++) {
+        pattern = new RegExp(` ${what[i]} `, 'gi');
+        content = content.replace(pattern, ` <mark>${what[i]}</mark> `);
+    }
+    container.innerHTML = content;
+    // return (container.innerHTML = highlighted) !== content;
 }
 
+
+/**
+ * マウスの近くに検索ボタンを表示する関数
+ */
+class SearchBtn {
+    constructor(mouseX, mouseY) {
+        // constructor() {
+        this.positionX = mouseX;
+        this.positionY = mouseY;
+        this.init();
+        this.createBtnDOM();
+    }
+    init = () => {
+        const btnicon = chrome.extension.getURL('static/icon.png');
+        this.btnHTML = `
+        <button id="idiom-search-button" style="border-radius: 8px;">
+            <img src="${btnicon}" width="20px" height="20px">
+        </button>`
+    }
+
+    btnBind = () => {
+        this.searchBtnWrapper
+    }
+
+    btnClick = () => {
+        console.log('reaifew');
+        this.searchBtnWrapper.addEventListener('click', function() {
+            searchTrigger();
+            document.body.removeChild(isSearchBtn);
+        })
+    }
+
+    createBtnDOM = () => {
+        this.btnDOM = document.createElement('div');
+        this.btnDOM.setAttribute('id', 'go-Search-Idiom-btn');
+        this.btnDOM.insertAdjacentHTML('afterbegin', this.btnHTML);
+        this.btnDOM.style.zIndex = 1000000;
+        this.btnDOM.style.position = 'absolute';
+        this.btnDOM.style.width = "20px";
+        this.btnDOM.style.height = "20px";
+        this.btnDOM.style.borderRadius = "5px";
+        this.btnDOM.style.left = `${this.positionX}px`;
+        this.btnDOM.style.top = `${this.positionY + -50 }px`;
+        document.body.appendChild(this.btnDOM);
+        this.searchBtnWrapper = document.getElementById('idiom-search-button');
+        console.log(this.searchBtnWrapper);
+        this.btnClick();
+    }
+}
 
 
 
@@ -181,27 +260,3 @@ const diffArrayTEST = (arr1, arr2) => {
     return arr1.concat(arr2)
         .filter(item => !arr1.includes(item) || !arr2.includes(item));
 }
-
-
-
-// ハッシュを用いて高速に処理を行えるのか考えたけど、今の所大丈夫そう
-// var arrTable = '';
-// const createHashTbale = () =>  {
-//     const starTimes = performance.now()
-
-//     arrTable = DICT_INDEX_KEYS.reduce(function(m, a, i) {
-//         m[a] = (m[a] || []).concat(i);
-//         return m;
-//     }, {});
-//     const endTimes = performance.now()
-//     console.log(endTimes - starTimes);
-// }
-
-// const searchHash = (searchChar) => {
-//     const starTimes = performance.now()
-//     if (searchNum in arrTable) {
-//         console.log(a);
-//     }
-//     const endTimes = performance.now()
-//     console.log(endTimes - starTimes);
-//
