@@ -8,7 +8,7 @@
 }
 
 .nav {
-    background-color: #FFFFFF;
+    background-color: #fcfcfc;
     display: flex;
     justify-content: space-between;
     height: 30px;
@@ -44,9 +44,7 @@
 
 .contents {
     height: 470px;
-    background-color: #F5F7FA;
-    /* overflow-y: auto; */
-    /* overflow-x: hidden */
+    background-color: #eff3f7;
 }
 
 .fadeout {
@@ -68,7 +66,7 @@
     align-items: center;
     position: absolute;
     bottom: 0;
-    background-color: #d2dcdd;
+    background-color: #fcfcfc;
     height: 30px;
     width: 270px;
 }

@@ -1,9 +1,10 @@
 {
-    "name": "BaclkgroundColor",
+    "name": "Glossary",
     "manifest_version": 2,
-    "version": "1.0",
+    "version": "0.4.01",
+    "description": "オフラインで爆速検索が可能な単語辞書",
     "browser_action": {
-        "default_title": "BaclkgroundColor"
+        "default_title": "Glossary"
     },
     "web_accessible_resources": [
         "components/panel/*.*",

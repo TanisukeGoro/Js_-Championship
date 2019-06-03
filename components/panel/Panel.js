@@ -86,6 +86,8 @@ class Panel {
         const card_css = chrome.extension.getURL('components/card/card.css');
         const panelframe_Logo = chrome.extension.getURL('components/panel/icon/81x20.png');
         const panelframe_user = chrome.extension.getURL('components/panel/icon/user-regular.svg');
+        const extensionOptionPage = chrome.extension.getURL('option.html');
+
 
 
         this.panelframe_bars = chrome.extension.getURL('components/panel/icon/bars-solid.svg');
@@ -119,7 +121,8 @@ class Panel {
 
             <div class="footer">
             <img src="${panelframe_user}" width="27" height="20">
-            <p>USENAME USENAME</p>
+            <p>User</p>
+            <a href="${extensionOptionPage}" target="_blank">Log in</a>
             </div>
             </div>
         </div>`;
@@ -177,12 +180,12 @@ class Panel {
         scrollLeft =
             document.documentElement.scrollLeft || // IE、Firefox、Opera
             document.body.scrollLeft; // Chrome、Safari
-        x = scrollLeft + 300;
+        x = window.innerWidth - 500;
         y = scrollTop + 40;
         this.wrapperElement.style.left = `${x}px`;
         this.wrapperElement.style.top = `${y}px`;
         this.wrapperPotision = this.wrapperElement.getBoundingClientRect();
-        this.wrapperPotision.x = 300;
+        this.wrapperPotision.x = window.innerWidth - 500;
         this.wrapperPotision.y = 40;
         this.panelDOMbind();
         this.panelDOMattach();
