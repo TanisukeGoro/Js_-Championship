@@ -19,6 +19,7 @@
     "icons": { "120": "static/icon.png" },
     "permissions": [
         "tabs",
+        "activeTab",
         "storage"
     ],
     "content_scripts": [{
