@@ -19,19 +19,30 @@ chrome.runtime.onMessage.addListener(
         console.log(isPanel);
         return true
     });
-
+displayFlg = true;
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
         let storageChange = changes[key];
         if (key == 'idiomListData') {
-            cardsNewData = checkingObjDuplicate(
-                storageChange.newValue,
-                storageChange.oldValue
-            );
-            for (let i = 0; i < cardsNewData.length; i++) {
-                cardArr.push(new Card(cardsNewData[i].title, cardsNewData[i].description));
+            newCard = storageChange.newValue;
+            oldCard = storageChange.oldValue;
+
+            if (oldCard == undefined) {
+                displayFlg = true;
+                for (let i = 0; i < newCard.length; i++) {
+                    cardArr.push(new Card(newCard[i].title, newCard[i].description));
+                }
+                continue;
             };
-            console.log(cardsNewData);
+
+            for (let i = 0; i < newCard.length; i++) {
+                for (let j = 0; j < oldCard.length; j++) {
+                    if (newCard[i].title === oldCard[j].title) displayFlg = false;
+                }
+                if (displayFlg === true)
+                    cardArr.push(new Card(newCard[i].title, newCard[i].description));
+                displayFlg = true;
+            }
             console.log(cardArr);
         }
     }
@@ -56,6 +67,7 @@ const checkingObjDuplicate = (newIdiom, oldIdiom) => {
 class Card {
     constructor(title, description) {
         this.title = title;
+        this.cardID = `idiom-${this.title.replace(/\s+/g, "")}`
         this.sendBtnID = `idom-send-btn-${this.title.replace(/\s+/g, "")}`
         this.deleatBtnID = `idom-delete-btn-${this.title.replace(/\s+/g, "")}`
         this.description = description;
@@ -64,7 +76,6 @@ class Card {
 
     init = () => {
         this.cardHTML = `
-            
             <div class="card__content">
                 <h3>${this.title}</h3>
                 <p>${this.description}</p>
@@ -78,7 +89,7 @@ class Card {
     createCardDOM = () => {
         this.cardDOM = document.createElement('div');
         this.cardDOM.setAttribute('class', 'card');
-        this.cardDOM.setAttribute('id', `idiom-${this.title.replace(/\s+/g, "")}`);
+        this.cardDOM.setAttribute('id', this.cardID);
         this.cardDOM.innerHTML = this.cardHTML;
         this.idiomPanelWrapper = document.querySelector('#idiom-card--app');
         this.idiomPanelWrapper.appendChild(this.cardDOM);
@@ -95,10 +106,10 @@ class Card {
     }
 
     cardSend = (e) => {
-        console.log(e.path);
+        this.sendCardBtn.style.backgroundColor = "#0fd378";
     }
     cardDelete = (e) => {
-        console.log(e.path);
+        this.cardDOM.parentNode.removeChild(this.cardDOM);
     }
 
 }

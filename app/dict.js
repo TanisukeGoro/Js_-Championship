@@ -12,7 +12,7 @@ const BLACK_LIST = [
     'my', 'me', 'mine',
     'he', 'his', 'him',
     'she', 'her',
-    'we', 'our', 'us',
+    'we', 'our', 'us', 'be',
     'this', 'that', 'these', 'those',
     'they', 'their', 'them',
     'is', 'was', 'are', 'were',
@@ -190,7 +190,7 @@ function highlight(container, what) {
     var content = container.innerHTML
     let pattern = ''
     for (let i = 0; i < what.length; i++) {
-        pattern = new RegExp(` ${what[i]} `, 'gi');
+        pattern = new RegExp(` ${what[i]} | ${what[i]}.| ${what[i]},| ${what[i]}s`, 'gi');
         content = content.replace(pattern, ` <mark>${what[i]}</mark> `);
     }
     container.innerHTML = content;
